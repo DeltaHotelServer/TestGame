@@ -6,6 +6,8 @@ public class ClickDetector : MonoBehaviour
 {
     private void OnMouseDown()
     {
+        // Punktestand um 1 erhöhen
+        GameObject.FindObjectOfType<SpawnerScript>().AddPlayerScore();
         Destroy(gameObject);
     }
 }

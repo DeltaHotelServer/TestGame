@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
+using UnityEngine.SceneManagement;
 
 public class SpawnerScript : MonoBehaviour
 {
@@ -11,10 +13,16 @@ public class SpawnerScript : MonoBehaviour
     public float timeLeft;
     bool gameStarted = true;
 
+    public int playerScore;
+    public TextMeshProUGUI roundTimeText;
+
+    public GameObject restartCanvas;
+
     // Start is called before the first frame update
     void Start()
     {
         InvokeRepeating("SpawnPlanet", 1, 1);
+        restartCanvas.SetActive(false);
     }
 
     // Update is called once per frame
@@ -22,6 +30,7 @@ public class SpawnerScript : MonoBehaviour
     {
         // Countdown
         timeLeft -= Time.deltaTime;
+        roundTimeText.text = "TIMELEFT: " + timeLeft.ToString();
 
         if (timeLeft <= 0 && gameStarted)
         {
@@ -29,6 +38,10 @@ public class SpawnerScript : MonoBehaviour
             gameStarted = false;
             // Instanziieren stoppen
             CancelInvoke("SpawnPlanet");
+            // Punktestand übermitteln
+            GameObject.FindObjectOfType<Leaderboard>().SetLeaderboardEntry(playerScore);
+            // Restart Canvas aktivieren
+            restartCanvas.SetActive(true);
         }
     }
 
@@ -42,5 +55,19 @@ public class SpawnerScript : MonoBehaviour
 
         // Instanziieren des Planeten
         Instantiate(planetPrefab, randomPos, Quaternion.identity);
+    }
+
+    public void AddPlayerScore()
+    {
+        // Läuft die Runde noch?
+        if (gameStarted)
+        {
+            playerScore += 1;
+        }
+    }
+
+    public void SceneRestart()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }
